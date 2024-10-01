@@ -204,7 +204,7 @@
 
     <div class="controls" style="display: none;">
         <span class="token-count">✦ <span id="tokenCount">100</span></span>
-        <button id="nextButton" class="next-button">Next Episode</button>
+        <button id="nextButton" class="next-button" style="display: none;">Next Episode</button>
     </div>
 
     <div id="modal" class="modal">
@@ -223,8 +223,8 @@
         let tokens = 100;
         let currentEpisode = 1;
         const episodes = [
-            { id: 1, url: 'https://www.youtube.com/embed/1ijT0BmO2Mk?si=OkYvT_JfMuYwWd60' },
-            { id: 2, url: 'https://www.youtube.com/embed/VvWUCFL2XtA?si=eigSEYYwtdKZsHek' }
+            { id: 1, url: 'https://www.youtube.com/embed/1ijT0BmO2Mk?si=OkYvT_JfMuYwWd60&autoplay=1&controls=0' },
+            { id: 2, url: 'https://www.youtube.com/embed/VvWUCFL2XtA?si=eigSEYYwtdKZsHek&autoplay=1&controls=0' }
         ];
 
         const onboarding = document.querySelector('.onboarding');
@@ -266,9 +266,8 @@
 
         function updateUI() {
             tokenCountElement.textContent = tokens;
-            nextButton.disabled = currentEpisode >= episodes.length;
-            nextButton.textContent = currentEpisode < episodes.length ? 'Next Episode' : 'No More Episodes';
             videoPlayer.src = episodes[currentEpisode - 1].url;
+            nextButton.style.display = 'none';
         }
 
         function handleNextEpisode() {
@@ -276,6 +275,7 @@
                 tokens -= 10;
                 currentEpisode++;
                 updateUI();
+                nextButton.style.display = 'none';
             } else {
                 openModal();
             }
@@ -306,6 +306,15 @@
         setInterval(() => {
             reward.style.display = 'block';
         }, 60000); // Show reward every minute
+
+        // Listen for video end event
+        videoPlayer.addEventListener('ended', () => {
+            if (currentEpisode < episodes.length) {
+                nextButton.style.display = 'block';
+            } else {
+                nextButton.style.display = 'none';
+            }
+        });
 
     </script>
 </body>
