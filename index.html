@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Belt Microdramas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            font-family: 'Arial', sans-serif;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            color: #ffffff;
+        }
+        .onboarding {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        .onboarding h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+        .onboarding p {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 80%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transition-delay: 0.5s;
+        }
+        .landing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://via.placeholder.com/1080x1920');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .series-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .series-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        .series-card img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .series-card h2 {
+            margin-bottom: 10px;
+        }
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        .token-count {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .next-button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .next-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 65, 108, 0.5);
+        }
+        .next-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+        .close-modal {
+            background: linear-gradient(45deg, #4a90e2, #7e57c2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .close-modal:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.5);
+        }
+        .reward {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background-color: #ffd700;
+            padding: 10px 15px;
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: bounce 1s infinite;
+            display: none;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding">
+        <h1>Blue Belt</h1>
+        <p>Immerse yourself in bite-sized drama</p>
+    </div>
+
+    <div class="landing">
+        <div class="series-card">
+            <img src="https://via.placeholder.com/200" alt="Brazzaville Beach">
+            <h2>Brazzaville Beach</h2>
+            <p>A tale of love and survival in the heart of Africa</p>
+        </div>
+    </div>
+
+    <div class="video-container">
+        <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+
+    <div class="controls" style="display: none;">
+        <span class="token-count">✦ <span id="tokenCount">100</span></span>
+        <button id="nextButton" class="next-button">Next Episode</button>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Not Enough Tokens</h2>
+            <p>You need at least 10 tokens to watch the next episode.</p>
+            <button class="close-modal" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
+
+    <div id="reward" class="reward">
+        <button onclick="claimReward()">Claim 5 Tokens</button>
+    </div>
+
+    <script>
+        let tokens = 100;
+        let currentEpisode = 1;
+        const episodes = [
+            { id: 1, url: 'https://www.youtube.com/embed/1ijT0BmO2Mk?si=OkYvT_JfMuYwWd60' },
+            { id: 2, url: 'https://www.youtube.com/embed/VvWUCFL2XtA?si=eigSEYYwtdKZsHek' }
+        ];
+
+        const onboarding = document.querySelector('.onboarding');
+        const landing = document.querySelector('.landing');
+        const videoContainer = document.querySelector('.video-container');
+        const controls = document.querySelector('.controls');
+        const tokenCountElement = document.getElementById('tokenCount');
+        const nextButton = document.getElementById('nextButton');
+        const modal = document.getElementById('modal');
+        const reward = document.getElementById('reward');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // Onboarding animation
+        setTimeout(() => {
+            onboarding.querySelector('h1').style.opacity = '1';
+            onboarding.querySelector('h1').style.transform = 'translateY(0)';
+        }, 500);
+
+        setTimeout(() => {
+            onboarding.querySelector('p').style.opacity = '1';
+            onboarding.querySelector('p').style.transform = 'translateY(0)';
+        }, 1000);
+
+        setTimeout(() => {
+            onboarding.style.opacity = '0';
+            setTimeout(() => {
+                onboarding.style.display = 'none';
+                landing.style.opacity = '1';
+            }, 1000);
+        }, 3000);
+
+        // Start series
+        document.querySelector('.series-card').addEventListener('click', () => {
+            landing.style.display = 'none';
+            videoContainer.style.display = 'block';
+            controls.style.display = 'flex';
+            updateUI();
+        });
+
+        function updateUI() {
+            tokenCountElement.textContent = tokens;
+            nextButton.disabled = currentEpisode >= episodes.length;
+            nextButton.textContent = currentEpisode < episodes.length ? 'Next Episode' : 'No More Episodes';
+            videoPlayer.src = episodes[currentEpisode - 1].url;
+        }
+
+        function handleNextEpisode() {
+            if (tokens >= 10) {
+                tokens -= 10;
+                currentEpisode++;
+                updateUI();
+            } else {
+                openModal();
+            }
+        }
+
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function claimReward() {
+            tokens += 5;
+            reward.style.display = 'none';
+            updateUI();
+        }
+
+        nextButton.addEventListener('click', handleNextEpisode);
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        setInterval(() => {
+            reward.style.display = 'block';
+        }, 60000); // Show reward every minute
+
+    </script>
+</body>
+</html>
