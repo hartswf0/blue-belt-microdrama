@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blue Belt Microdramas</title>
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #0a0a0a;
+            --text-color: #ffffff;
+            --modal-background: rgba(10, 10, 10, 0.8);
+        }
         * {
             margin: 0;
             padding: 0;
@@ -14,54 +21,65 @@
             font-family: 'Arial', sans-serif;
             height: 100%;
             overflow: hidden;
-            background-color: #0a0a0a;
-            color: #ffffff;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
-        .onboarding {
+        .background-image {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #0a0a0a;
+            background-image: url('001_EP_02.png');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+        }
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            background-color: var(--modal-background);
+            backdrop-filter: blur(10px);
         }
-        .onboarding h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        .logo-container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 2rem;
         }
-        .onboarding p {
-            font-size: 1.2rem;
-            text-align: center;
-            max-width: 80%;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-            transition-delay: 0.5s;
-        }
-        .landing {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .logo {
             width: 100%;
             height: 100%;
-            background-image: url('https://via.placeholder.com/1080x1920');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+            background-color: var(--primary-color);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 75%, 75% 100%, 50% 75%, 0% 75%);
+            animation: logoFadeIn 2s ease-in-out;
+        }
+        @keyframes logoFadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .onboarding h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: fadeIn 1s ease-in-out 0.5s both;
+        }
+        .onboarding p {
+            font-size: 1rem;
+            text-align: center;
+            max-width: 80%;
+            animation: fadeIn 1s ease-in-out 1s both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .series-card {
             background-color: rgba(255, 255, 255, 0.1);
@@ -77,47 +95,96 @@
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
         .series-card img {
-            width: 200px;
-            height: 200px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
             border-radius: 10px;
             margin-bottom: 15px;
         }
-        .series-card h2 {
-            margin-bottom: 10px;
-        }
         .video-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
+            background-color: transparent;
+            z-index: 100;
         }
-        iframe {
+        .video-wrapper {
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        video {
+            width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .video-controls {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .control-button {
+            background: none;
             border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
         }
-        .controls {
-            position: fixed;
+        .progress-bar {
+            position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease-in-out;
+        }
+        .episode-progress {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.5);
+            gap: 5px;
+        }
+        .episode-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .episode-dot.watched {
+            background-color: var(--primary-color);
+        }
+        .rating-screen {
+            background-color: var(--modal-background);
+        }
+        .rating-content {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
             backdrop-filter: blur(10px);
         }
-        .token-count {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .star-rating {
+            font-size: 2rem;
+            margin: 20px 0;
+        }
+        .star {
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+        }
+        .star.active {
+            color: gold;
         }
         .next-button {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: white;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
             border: none;
             padding: 10px 20px;
             border-radius: 25px;
@@ -126,196 +193,244 @@
         }
         .next-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 65, 108, 0.5);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
         }
-        .next-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .blue-belt-animation {
+            width: 200px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem auto;
+        }
+        .belt-knot {
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: beltKnot 4s infinite;
+        }
+        @keyframes beltKnot {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        .token-count {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 15px;
         }
         .modal {
-            display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            background-color: var(--modal-background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
         .modal-content {
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            margin: 15% auto;
-            padding: 20px;
+            padding: 2rem;
             border-radius: 15px;
-            width: 80%;
-            max-width: 300px;
             text-align: center;
         }
-        .close-modal {
-            background: linear-gradient(45deg, #4a90e2, #7e57c2);
-            color: white;
+        .modal-button {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
             border: none;
             padding: 10px 20px;
             border-radius: 25px;
             cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .close-modal:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(74, 144, 226, 0.5);
-        }
-        .reward {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background-color: #ffd700;
-            padding: 10px 15px;
-            border-radius: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: bounce 1s infinite;
-            display: none;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            margin-top: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="onboarding">
+    <div class="background-image"></div>
+
+    <div class="screen onboarding">
+        <div class="logo-container">
+            <div class="logo"></div>
+        </div>
         <h1>Blue Belt</h1>
         <p>Immerse yourself in bite-sized drama</p>
     </div>
 
-    <div class="landing">
+    <div class="screen landing" style="display: none;">
         <div class="series-card">
-            <img src="https://via.placeholder.com/200" alt="Brazzaville Beach">
+            <img src="001_EP_02.png" alt="Brazzaville Beach">
             <h2>Brazzaville Beach</h2>
             <p>A tale of love and survival in the heart of Africa</p>
         </div>
     </div>
 
-    <div class="video-container">
-        <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-    </div>
-
-    <div class="controls" style="display: none;">
-        <span class="token-count">✦ <span id="tokenCount">100</span></span>
-        <button id="nextButton" class="next-button" style="display: none;">Next Episode</button>
-    </div>
-
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2>Not Enough Tokens</h2>
-            <p>You need at least 10 tokens to watch the next episode.</p>
-            <button class="close-modal" onclick="closeModal()">Got it</button>
+    <div class="screen video-container" style="display: none;">
+        <div class="video-wrapper">
+            <video id="videoPlayer" src="path/to/your/local/video.mp4"></video>
+            <div class="video-controls">
+                <button class="control-button" id="rewindButton">⏪</button>
+                <button class="control-button" id="playPauseButton">⏯️</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div class="episode-progress" id="episodeProgress"></div>
         </div>
     </div>
 
-    <div id="reward" class="reward">
-        <button onclick="claimReward()">Claim 5 Tokens</button>
+    <div class="screen rating-screen" style="display: none;">
+        <div class="rating-content">
+            <h2>How did you like the episode?</h2>
+            <div class="star-rating" id="starRating">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
+            </div>
+            <button class="next-button" id="nextButton">Next Episode</button>
+        </div>
+        <div class="blue-belt-animation">
+            <div class="belt-knot"></div>
+        </div>
+    </div>
+
+    <div class="token-count">Tokens: <span id="tokenDisplay">50</span></div>
+
+    <div id="tokenModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Not Enough Tokens</h2>
+            <p>You need 10 tokens to watch the next episode.</p>
+            <button class="modal-button" id="closeModal">Close</button>
+        </div>
     </div>
 
     <script>
-        let tokens = 100;
-        let currentEpisode = 1;
         const episodes = [
-            { id: 1, url: 'https://www.youtube.com/embed/1ijT0BmO2Mk?si=OkYvT_JfMuYwWd60&autoplay=1&controls=0' },
-            { id: 2, url: 'https://www.youtube.com/embed/VvWUCFL2XtA?si=eigSEYYwtdKZsHek&autoplay=1&controls=0' }
+            { id: 1, url: 'EPISODE_01.mp4' },
+            { id: 2, url: 'EPISODE_02.mp4' },
+            { id: 3, url: 'BLUE_BELT_INTRO.mp4' }
         ];
+
+        let currentEpisode = 0;
+        let tokens = 50;
+        const tokenCost = 10;
 
         const onboarding = document.querySelector('.onboarding');
         const landing = document.querySelector('.landing');
         const videoContainer = document.querySelector('.video-container');
-        const controls = document.querySelector('.controls');
-        const tokenCountElement = document.getElementById('tokenCount');
-        const nextButton = document.getElementById('nextButton');
-        const modal = document.getElementById('modal');
-        const reward = document.getElementById('reward');
+        const ratingScreen = document.querySelector('.rating-screen');
         const videoPlayer = document.getElementById('videoPlayer');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const rewindButton = document.getElementById('rewindButton');
+        const progressBar = document.getElementById('progressBar');
+        const episodeProgress = document.getElementById('episodeProgress');
+        const starRating = document.getElementById('starRating');
+        const nextButton = document.getElementById('nextButton');
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        const tokenModal = document.getElementById('tokenModal');
+        const closeModal = document.getElementById('closeModal');
+
+        function showScreen(screen) {
+            [onboarding, landing, videoContainer, ratingScreen].forEach(s => {
+                s.style.display = 'none';
+                s.style.opacity = '0';
+            });
+            screen.style.display = 'flex';
+            setTimeout(() => screen.style.opacity = '1', 50);
+        }
 
         // Onboarding animation
-        setTimeout(() => {
-            onboarding.querySelector('h1').style.opacity = '1';
-            onboarding.querySelector('h1').style.transform = 'translateY(0)';
-        }, 500);
-
-        setTimeout(() => {
-            onboarding.querySelector('p').style.opacity = '1';
-            onboarding.querySelector('p').style.transform = 'translateY(0)';
-        }, 1000);
-
-        setTimeout(() => {
-            onboarding.style.opacity = '0';
-            setTimeout(() => {
-                onboarding.style.display = 'none';
-                landing.style.opacity = '1';
-            }, 1000);
-        }, 3000);
+        setTimeout(() => showScreen(landing), 3000);
 
         // Start series
         document.querySelector('.series-card').addEventListener('click', () => {
-            landing.style.display = 'none';
-            videoContainer.style.display = 'block';
-            controls.style.display = 'flex';
-            updateUI();
+            if (tokens >= tokenCost) {
+                tokens -= tokenCost;
+                updateTokenDisplay();
+                showScreen(videoContainer);
+                loadEpisode();
+            } else {
+                tokenModal.style.display = 'flex';
+            }
         });
 
-        function updateUI() {
-            tokenCountElement.textContent = tokens;
-            videoPlayer.src = episodes[currentEpisode - 1].url;
-            nextButton.style.display = 'none';
+        function loadEpisode() {
+            videoPlayer.src = episodes[currentEpisode].url;
+            videoPlayer.play();
+            updateEpisodeProgress();
         }
 
-        function handleNextEpisode() {
-            if (tokens >= 10) {
-                tokens -= 10;
-                currentEpisode++;
-                updateUI();
-                nextButton.style.display = 'none';
+        function updateEpisodeProgress() {
+            episodeProgress.innerHTML = '';
+            episodes.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('episode-dot');
+                if (index <= currentEpisode) dot.classList.add('watched');
+                episodeProgress.appendChild(dot);
+            });
+        }
+
+        function updateTokenDisplay() {
+            tokenDisplay.textContent = tokens;
+        }
+
+        playPauseButton.addEventListener('click', () => {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+                playPauseButton.textContent = '⏸️';
             } else {
-                openModal();
+                videoPlayer.pause();
+                playPauseButton.textContent = '▶️';
             }
-        }
+        });
 
-        function openModal() {
-            modal.style.display = 'block';
-        }
+        rewindButton.addEventListener('click', () => {
+            videoPlayer.currentTime -= 10;
+        });
 
-        function closeModal() {
-            modal.style.display = 'none';
-        }
+        videoPlayer.addEventListener('timeupdate', () => {
+            const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+        });
 
-        function claimReward() {
-            tokens += 5;
-            reward.style.display = 'none';
-            updateUI();
-        }
-
-        nextButton.addEventListener('click', handleNextEpisode);
-
-        window.onclick = function(event) {
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
-        setInterval(() => {
-            reward.style.display = 'block';
-        }, 60000); // Show reward every minute
-
-        // Listen for video end event
         videoPlayer.addEventListener('ended', () => {
-            if (currentEpisode < episodes.length) {
-                nextButton.style.display = 'block';
-            } else {
-                nextButton.style.display = 'none';
+            showScreen(ratingScreen);
+        });
+
+
+        starRating.addEventListener('click', (e) => {
+            if (e.target.classList.contains('star')) {
+                const rating = e.target.dataset.rating;
+                document.querySelectorAll('.star').forEach(star => {
+                    star.classList.toggle('active', star.dataset.rating <= rating);
+                });
             }
         });
 
+        nextButton.addEventListener('click', () => {
+            currentEpisode++;
+            if (currentEpisode < episodes.length) {
+                showScreen(videoContainer);
+                loadEpisode();
+            } else {
+                // End of series logic
+                alert('You have completed all episodes!');
+            }
+        });
     </script>
 </body>
 </html>
